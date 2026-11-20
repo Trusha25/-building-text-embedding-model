@@ -1,31 +1,34 @@
-
 import pandas as pd
+import pickle
 
-# 1. Load our prepared dataset
-df = pd.read_csv("positive_pairs.csv")
+# Load only training data
+df = pd.read_csv("train_data.csv")
 
-# 2. Create an empty vocabulary
+# Create an empty vocabulary
 vocab = {}
 
-# 3. Combine queries and positive passages
+# Combine queries and positive passages
 all_text = (
     df["query"].fillna("").tolist()
     + df["positive_passage"].fillna("").tolist()
 )
 
-# 4. Build vocabulary
+# Build vocabulary
 for sentence in all_text:
-
-    # Convert text to lowercase and split into tokens
     tokens = sentence.lower().split()
 
-    # Assign IDs to unique tokens
     for token in tokens:
         if token not in vocab:
             vocab[token] = len(vocab)
 
-# 5. Display vocabulary information
-print("Vocabulary size:", len(vocab))
+# Add an unknown token
+vocab["<UNK>"] = len(vocab)
 
-print("\nFirst 20 vocabulary entries:")
+# Display vocabulary information
+print("Training vocabulary size:", len(vocab))
+print("\nFirst 20 entries:")
 print(list(vocab.items())[:20])
+with open("vocab.pkl", "wb") as f:
+    pickle.dump(vocab, f)
+
+print("\nVocabulary saved successfully!")
